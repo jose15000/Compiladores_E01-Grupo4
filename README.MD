@@ -1,6 +1,6 @@
 # Analisador léxico e analisador Sintático
 
-# Como executar:
+## 1. Como executar:
 
 - Você pode editar o arquivo `teste.txt` ou executar o programa já existente;
 
