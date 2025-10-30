@@ -1,40 +1,33 @@
 import sys
 from antlr4 import *
+from antlr4.tree.Tree import TerminalNode
+from antlr4.error.ErrorListener import ErrorListener
 from QuizLangLexer import QuizLangLexer
 from QuizLangParser import QuizLangParser
 from QuizLangVisitor import QuizLangVisitor
+from SemanticAnalyzer import SemanticAnalyzer
 
-# Exemplo de um quiz escrito na linguagem QuizLang
-# Coloque este conteúdo em um arquivo, por ex. "exemplo.quiz"
-quiz_de_exemplo = """
-quiz Compiladores_Quiz_1 {
-    titulo "Questionário de Compiladores"
-    tempo 60
+class SyntaxErrorListener(ErrorListener):
+    def __init__(self):
+        super().__init__()
+        self.errors = []
 
-    secao "Análise Léxica" {
-        mcq Q1:
-            pergunta "O que faz um analisador léxico?"
-            opcoes ["Agrupar caracteres em tokens", "Verificar a sintaxe", "Gerar código"]
-            resposta "Agrupar caracteres em tokens"
+    def syntaxError(self, recognizer, offendingSymbol, line, column, msg, e):
+        self.errors.append(f"LÉXICO/SINTAXE ERRO: linha {line}:{column} {msg}")
 
-        discursiva Q2:
-            pergunta "Descreva o conceito de token."
-            palavras 50
-    }
-
-    secao "Análise Sintática" {
-        numerica Q3:
-            pergunta "Qual o intervalo de portas para FTP?"
-            intervalo 20 - 21
-    }
-}
-"""
+def pretty_print_tree(node, parser, indent=""):
+    if (node is None):
+        return
+    if isinstance(node, TerminalNode):
+        print(indent + f"TOKEN: '{node.getSymbol().text}'")
+    else:
+        print(indent + parser.ruleNames[node.getRuleIndex()])
+        if hasattr(node, 'children') and node.children is not None:
+            for child in node.children:
+                pretty_print_tree(child, parser, indent + "  ")
 
 class QuizVisitor(QuizLangVisitor):
-    """
-    Esta classe visitor percorre a árvore sintática gerada pelo ANTLR
-    e extrai as informações do quiz de forma estruturada.
-    """
+ 
     def visitQuiz(self, ctx:QuizLangParser.QuizContext):
         quiz_id = ctx.ID().getText()
         print(f"Iniciando análise do Quiz: {quiz_id}")
@@ -91,8 +84,11 @@ class QuizVisitor(QuizLangVisitor):
 
 
 def main():
-    # Cria o fluxo de entrada a partir da string de exemplo
-    input_stream = InputStream(quiz_de_exemplo)
+    if len(sys.argv) > 1:
+        input_stream = FileStream(sys.argv[1], encoding='utf-8')
+    else:
+        print("Uso: python main.py <arquivo_de_teste>")
+        return
     
     # Cria o analisador léxico
     lexer = QuizLangLexer(input_stream)
@@ -103,20 +99,42 @@ def main():
     # Cria o analisador sintático
     parser = QuizLangParser(stream)
     
-    # Define um tratador de erros customizado (opcional, mas recomendado)
-    # parser.removeErrorListeners() # Descomente se quiser remover os listeners padrão
-    # parser.addErrorListener(MyErrorListener())
+    # Remove o listener padrão e adiciona o customizado
+    parser.removeErrorListeners()
+    error_listener = SyntaxErrorListener()
+    parser.addErrorListener(error_listener)
     
-    try:
-        # Inicia a análise a partir da regra 'quiz'
-        tree = parser.quiz()
-        
-        # Cria o visitor e inicia a visitação da árvore
-        visitor = QuizVisitor()
-        visitor.visit(tree)
+    # Inicia a análise a partir da regra 'quiz'
+    tree = parser.quiz()
 
-    except Exception as e:
-        print(f"Ocorreu um erro durante a análise: {e}")
+    # Verifica se foram encontrados erros
+    if error_listener.errors:
+        print("\n--- Erros Encontrados ---")
+        for error in error_listener.errors:
+            print(error)
+        print("-------------------------")
+    else:
+        print("\n--- Análise Concluída Sem Erros ---")
+        # Se não houver erros, pode prosseguir com a visitação
+        print("\n--- Árvore de Análise Sintática ---")
+        pretty_print_tree(tree, parser)
+        print("-------------------------------------\n")
+
+        # Análise Semântica
+        semantic_analyzer = SemanticAnalyzer()
+        semantic_analyzer.visit(tree)
+
+        print(semantic_analyzer.report())
+        if semantic_analyzer.errors:
+            print("--- Erros Semânticos Encontrados ---")
+            for error in semantic_analyzer.errors:
+                print(error)
+            print("-------------------------------------")
+        else:
+            print("--- Análise Semântica Concluída Sem Erros ---")
+            visitor = QuizVisitor()
+            visitor.visit(tree)
 
 if __name__ == '__main__':
     main()
+

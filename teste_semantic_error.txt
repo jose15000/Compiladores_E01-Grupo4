@@ -1,0 +1,20 @@
+quiz SemanticErrorQuiz {
+    titulo "Semantic Error Quiz"
+    tempo 15
+
+    secao "Semantic Errors" {
+        mcq Q1:
+            pergunta "What is 2+2?"
+            opcoes ["3", "4", "5"]
+            resposta "4"
+
+        discursiva Q1:
+            pergunta "What is the capital of France?"
+            palavras 20
+
+        mcq Q2:
+            pergunta "Which is a vowel?"
+            opcoes ["A", "B", "C"]
+            resposta "D"
+    }
+}

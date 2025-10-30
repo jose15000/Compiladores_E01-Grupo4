@@ -10,7 +10,7 @@ else:
 
 def serializedATN():
     return [
-        4,1,24,94,2,0,7,0,2,1,7,1,2,2,7,2,2,3,7,3,2,4,7,4,2,5,7,5,2,6,7,
+        4,1,25,94,2,0,7,0,2,1,7,1,2,2,7,2,2,3,7,3,2,4,7,4,2,5,7,5,2,6,7,
         6,2,7,7,7,2,8,7,8,2,9,7,9,1,0,1,0,1,0,1,0,1,0,1,0,1,0,1,0,1,1,1,
         1,1,1,1,1,1,1,1,2,4,2,35,8,2,11,2,12,2,36,1,3,1,3,1,3,1,3,5,3,43,
         8,3,10,3,12,3,46,9,3,1,3,1,3,1,4,1,4,1,4,3,4,53,8,4,1,5,1,5,1,5,
@@ -59,7 +59,7 @@ class QuizLangParser ( Parser ):
                       "SECAO", "MCQ", "PERGUNTA", "OPCOES", "RESPOSTA", 
                       "DISCURSIVA", "PALAVRAS", "NUMERICA", "INTERVALO", 
                       "ID", "STRING", "NUMBER", "LBRACE", "RBRACE", "LBRACK", 
-                      "RBRACK", "COLON", "COMMA", "HYPHEN", "WS" ]
+                      "RBRACK", "COLON", "COMMA", "HYPHEN", "COMMENT", "WS" ]
 
     RULE_quiz = 0
     RULE_metadados = 1
@@ -99,7 +99,8 @@ class QuizLangParser ( Parser ):
     COLON=21
     COMMA=22
     HYPHEN=23
-    WS=24
+    COMMENT=24
+    WS=25
 
     def __init__(self, input:TokenStream, output:TextIO = sys.stdout):
         super().__init__(input, output)
@@ -142,14 +143,6 @@ class QuizLangParser ( Parser ):
 
         def getRuleIndex(self):
             return QuizLangParser.RULE_quiz
-
-        def enterRule(self, listener:ParseTreeListener):
-            if hasattr( listener, "enterQuiz" ):
-                listener.enterQuiz(self)
-
-        def exitRule(self, listener:ParseTreeListener):
-            if hasattr( listener, "exitQuiz" ):
-                listener.exitQuiz(self)
 
         def accept(self, visitor:ParseTreeVisitor):
             if hasattr( visitor, "visitQuiz" ):
@@ -211,14 +204,6 @@ class QuizLangParser ( Parser ):
         def getRuleIndex(self):
             return QuizLangParser.RULE_metadados
 
-        def enterRule(self, listener:ParseTreeListener):
-            if hasattr( listener, "enterMetadados" ):
-                listener.enterMetadados(self)
-
-        def exitRule(self, listener:ParseTreeListener):
-            if hasattr( listener, "exitMetadados" ):
-                listener.exitMetadados(self)
-
         def accept(self, visitor:ParseTreeVisitor):
             if hasattr( visitor, "visitMetadados" ):
                 return visitor.visitMetadados(self)
@@ -267,14 +252,6 @@ class QuizLangParser ( Parser ):
 
         def getRuleIndex(self):
             return QuizLangParser.RULE_secoes
-
-        def enterRule(self, listener:ParseTreeListener):
-            if hasattr( listener, "enterSecoes" ):
-                listener.enterSecoes(self)
-
-        def exitRule(self, listener:ParseTreeListener):
-            if hasattr( listener, "exitSecoes" ):
-                listener.exitSecoes(self)
 
         def accept(self, visitor:ParseTreeVisitor):
             if hasattr( visitor, "visitSecoes" ):
@@ -342,14 +319,6 @@ class QuizLangParser ( Parser ):
         def getRuleIndex(self):
             return QuizLangParser.RULE_secao
 
-        def enterRule(self, listener:ParseTreeListener):
-            if hasattr( listener, "enterSecao" ):
-                listener.enterSecao(self)
-
-        def exitRule(self, listener:ParseTreeListener):
-            if hasattr( listener, "exitSecao" ):
-                listener.exitSecao(self)
-
         def accept(self, visitor:ParseTreeVisitor):
             if hasattr( visitor, "visitSecao" ):
                 return visitor.visitSecao(self)
@@ -414,14 +383,6 @@ class QuizLangParser ( Parser ):
 
         def getRuleIndex(self):
             return QuizLangParser.RULE_item
-
-        def enterRule(self, listener:ParseTreeListener):
-            if hasattr( listener, "enterItem" ):
-                listener.enterItem(self)
-
-        def exitRule(self, listener:ParseTreeListener):
-            if hasattr( listener, "exitItem" ):
-                listener.exitItem(self)
 
         def accept(self, visitor:ParseTreeVisitor):
             if hasattr( visitor, "visitItem" ):
@@ -500,14 +461,6 @@ class QuizLangParser ( Parser ):
         def getRuleIndex(self):
             return QuizLangParser.RULE_mcq
 
-        def enterRule(self, listener:ParseTreeListener):
-            if hasattr( listener, "enterMcq" ):
-                listener.enterMcq(self)
-
-        def exitRule(self, listener:ParseTreeListener):
-            if hasattr( listener, "exitMcq" ):
-                listener.exitMcq(self)
-
         def accept(self, visitor:ParseTreeVisitor):
             if hasattr( visitor, "visitMcq" ):
                 return visitor.visitMcq(self)
@@ -561,14 +514,6 @@ class QuizLangParser ( Parser ):
 
         def getRuleIndex(self):
             return QuizLangParser.RULE_pergunta
-
-        def enterRule(self, listener:ParseTreeListener):
-            if hasattr( listener, "enterPergunta" ):
-                listener.enterPergunta(self)
-
-        def exitRule(self, listener:ParseTreeListener):
-            if hasattr( listener, "exitPergunta" ):
-                listener.exitPergunta(self)
 
         def accept(self, visitor:ParseTreeVisitor):
             if hasattr( visitor, "visitPergunta" ):
@@ -628,14 +573,6 @@ class QuizLangParser ( Parser ):
 
         def getRuleIndex(self):
             return QuizLangParser.RULE_opcoes
-
-        def enterRule(self, listener:ParseTreeListener):
-            if hasattr( listener, "enterOpcoes" ):
-                listener.enterOpcoes(self)
-
-        def exitRule(self, listener:ParseTreeListener):
-            if hasattr( listener, "exitOpcoes" ):
-                listener.exitOpcoes(self)
 
         def accept(self, visitor:ParseTreeVisitor):
             if hasattr( visitor, "visitOpcoes" ):
@@ -711,14 +648,6 @@ class QuizLangParser ( Parser ):
         def getRuleIndex(self):
             return QuizLangParser.RULE_discursiva
 
-        def enterRule(self, listener:ParseTreeListener):
-            if hasattr( listener, "enterDiscursiva" ):
-                listener.enterDiscursiva(self)
-
-        def exitRule(self, listener:ParseTreeListener):
-            if hasattr( listener, "exitDiscursiva" ):
-                listener.exitDiscursiva(self)
-
         def accept(self, visitor:ParseTreeVisitor):
             if hasattr( visitor, "visitDiscursiva" ):
                 return visitor.visitDiscursiva(self)
@@ -789,14 +718,6 @@ class QuizLangParser ( Parser ):
 
         def getRuleIndex(self):
             return QuizLangParser.RULE_numerica
-
-        def enterRule(self, listener:ParseTreeListener):
-            if hasattr( listener, "enterNumerica" ):
-                listener.enterNumerica(self)
-
-        def exitRule(self, listener:ParseTreeListener):
-            if hasattr( listener, "exitNumerica" ):
-                listener.exitNumerica(self)
 
         def accept(self, visitor:ParseTreeVisitor):
             if hasattr( visitor, "visitNumerica" ):

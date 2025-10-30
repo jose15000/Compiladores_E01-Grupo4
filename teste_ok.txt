@@ -1,0 +1,24 @@
+quiz OkQuiz {
+    titulo "Quiz sem erros"
+    tempo 15
+
+    secao "Seção 1" {
+        mcq Q1:
+            pergunta "Qual a cor do céu?"
+            opcoes ["Azul", "Verde", "Vermelho"]
+            resposta "Azul"
+        discursiva Q2:
+            pergunta "Explique o ciclo da água."
+            palavras 50
+        numerica Q3:
+            pergunta "Quantos dias tem um ano?"
+            intervalo 365-366
+    }
+
+    secao "Seção 2" {
+        mcq Q4:
+            pergunta "Qual o maior planeta do sistema solar?"
+            opcoes ["Terra", "Júpiter", "Marte"]
+            resposta "Júpiter"
+    }
+}

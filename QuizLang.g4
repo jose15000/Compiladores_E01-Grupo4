@@ -41,4 +41,5 @@ COLON: ':';
 COMMA: ',';
 HYPHEN: '-';
 
+COMMENT: '//' ~[\r\n]* -> skip;
 WS: [ \t\r\n]+ -> skip; // Ignora espaços em branco, tabulações e quebras de linha

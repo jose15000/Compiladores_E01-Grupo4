@@ -1,0 +1,11 @@
+quiz ErrorQuiz {
+    titulo "Error Quiz"
+    tempo 10
+
+    secao "Error Section" {
+        mcq Q1:
+            pergunta "This section is missing a closing brace"
+            opcoes ["A", "B"]
+            resposta "A"
+    // Missing }
+}
