@@ -37,8 +37,6 @@ class SymbolTable:
             return False  # Symbol already exists in this scope
         sym = Symbol(name, type, scope)
         self.symbols[key] = sym
-        self.tasks.append({'scope': scope, 'name': name, 'type': type})
-        self.connections.setdefault(scope, []).append(name)
         self.variables.setdefault(scope, {})[name] = type
         return True
 
@@ -93,7 +91,7 @@ class SemanticAnalyzer(QuizLangVisitor):
         if not self.symbol_table.define(section_name, 'secao', quiz_scope):
             self.errors.append(f"Erro: A seção '{section_name}' já foi definida no escopo '{quiz_scope}'.")
         result = self.visitChildren(ctx)
-        if not self.symbol_table.connections.get(section_name):
+        if not self.symbol_table.variables.get(section_name):
             self.errors.append(f"Aviso: A seção '{section_name}' não contém questões.")
         self.symbol_table.exit_scope()
         return result
@@ -104,6 +102,10 @@ class SemanticAnalyzer(QuizLangVisitor):
         section_scope = self.symbol_table.current_scope
         if not self.symbol_table.define(question_id, 'mcq', section_scope):
             self.errors.append(f"Erro: A questão com ID '{question_id}' já foi definida no escopo '{section_scope}'.")
+        else:
+            # Adiciona a questão à lista de conexões da seção
+            self.symbol_table.connections.setdefault(section_scope, []).append(question_id)
+
         opcoes = [opt.getText() for opt in ctx.opcoes().STRING()]
         resposta = ctx.STRING().getText()
         opcoes_sem_aspas = [opt.strip('"') for opt in opcoes]
@@ -127,6 +129,10 @@ class SemanticAnalyzer(QuizLangVisitor):
         section_scope = self.symbol_table.current_scope
         if not self.symbol_table.define(question_id, 'discursiva', section_scope):
             self.errors.append(f"Erro: A questão com ID '{question_id}' já foi definida no escopo '{section_scope}'.")
+        else:
+            # Adiciona a questão à lista de conexões da seção
+            self.symbol_table.connections.setdefault(section_scope, []).append(question_id)
+
         # Limite de palavras: number
         if not self.symbol_table.define(f"{question_id}_palavras", 'number', section_scope):
             self.errors.append(f"Erro: Variável de palavras para '{question_id}' já definida no escopo '{section_scope}'.")
@@ -150,6 +156,10 @@ class SemanticAnalyzer(QuizLangVisitor):
         section_scope = self.symbol_table.current_scope
         if not self.symbol_table.define(question_id, 'numerica', section_scope):
             self.errors.append(f"Erro: A questão com ID '{question_id}' já foi definida no escopo '{section_scope}'.")
+        else:
+            # Adiciona a questão à lista de conexões da seção
+            self.symbol_table.connections.setdefault(section_scope, []).append(question_id)
+
         # Intervalo: dois números
         if not self.symbol_table.define(f"{question_id}_intervalo", 'tuple<number,number>', section_scope):
             self.errors.append(f"Erro: Variável de intervalo para '{question_id}' já definida no escopo '{section_scope}'.")
@@ -177,9 +187,6 @@ class SemanticAnalyzer(QuizLangVisitor):
         lines.append('\nSímbolos registrados:')
         for sym in self.symbol_table.get_all_symbols():
             lines.append(f"- {sym.type} '{sym.name}' (escopo: {sym.scope})")
-        lines.append('\nTarefas (questões):')
-        for t in self.symbol_table.tasks:
-            lines.append(f"- {t['type']} '{t['name']}' no escopo '{t['scope']}'")
         lines.append('\nConexões (seção -> questões):')
         for scope, names in self.symbol_table.connections.items():
             lines.append(f"- {scope}: {', '.join(names) if names else '(nenhuma)'}")

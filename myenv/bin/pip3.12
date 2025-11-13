@@ -1,4 +1,4 @@
-#!/home/jooj/Documents/projects/compiladores/myenv/bin/python3
+#!/home/jos/Documents/projects/Compiladores_E01-Grupo4/myenv/bin/python
 # -*- coding: utf-8 -*-
 import re
 import sys

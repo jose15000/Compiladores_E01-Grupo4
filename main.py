@@ -5,7 +5,8 @@ from antlr4.error.ErrorListener import ErrorListener
 from QuizLangLexer import QuizLangLexer
 from QuizLangParser import QuizLangParser
 from QuizLangVisitor import QuizLangVisitor
-from SemanticAnalyzer import SemanticAnalyzer
+from SemanticAnalyzer import SemanticAnalyzer, SymbolTable
+from QuizSimulator import QuizSimulator
 
 class SyntaxErrorListener(ErrorListener):
     def __init__(self):
@@ -125,16 +126,14 @@ def main():
         semantic_analyzer.visit(tree)
 
         print(semantic_analyzer.report())
-        if semantic_analyzer.errors:
-            print("--- Erros Semânticos Encontrados ---")
-            for error in semantic_analyzer.errors:
-                print(error)
-            print("-------------------------------------")
-        else:
-            print("--- Análise Semântica Concluída Sem Erros ---")
-            visitor = QuizVisitor()
-            visitor.visit(tree)
+        
+        # Apenas executa o visitor de impressão se não houver erros.
+        has_errors = any(e.startswith("Erro:") for e in semantic_analyzer.errors)
+        if not has_errors:
+            print("\n--- Iniciando Simulação do Quiz ---")
+            simulator = QuizSimulator()
+            simulator.visit(tree) # Coleta os dados do quiz
+            simulator.run() # Executa a simulação
 
 if __name__ == '__main__':
     main()
-
