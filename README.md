@@ -33,7 +33,8 @@ A QuizLang permite que usuários definam a estrutura de um quiz, incluindo metad
 3.  **Execute o compilador:**
     Para analisar e simular um arquivo de quiz (por exemplo, `teste_ok.txt`), execute o `main.py`:
     ```bash
-    python3 src/main.py exemplos/teste_ok.txt
+    cd src
+    python3 main.py exemplos/teste_ok.txt
     ```
     O programa irá validar o arquivo e, se não houver erros, iniciará a simulação interativa no terminal.
 
